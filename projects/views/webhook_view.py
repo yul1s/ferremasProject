@@ -13,16 +13,13 @@ class MercadoPagoWebhookView(APIView):
         sdk = mercadopago.SDK(settings.MERCADOPAGO['ACCESS_TOKEN'])
 
         try:
-            # Mercado Pago envía el id del recurso en request.data['id']
             payment_id = request.data.get('id', None)
             if not payment_id:
                 return Response({"error": "payment id no encontrado"}, status=status.HTTP_400_BAD_REQUEST)
 
-            # Obtener el detalle del pago
             payment_response = sdk.payment().get(payment_id)
             payment = payment_response["response"]
 
-            # Obtener la orden con external_reference
             orden_id = int(payment.get("external_reference"))
             orden = Orden.objects.get(id=orden_id)
 
